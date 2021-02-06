@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Snake Game</title>
+  </head>
+  <body>
+    <h1>Simple Snake Game</h1>
+    <canvas id="snake" width="512" height="512"></canvas>
+
+    <style>
+      body {
+        width: 95vh;
+        height: 95vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      h1 {
+        color: #46092a;
+        font-size: 40px;
+        font-weight: bold;
+        letter-spacing: 3px;
+        text-decoration: underline;
+      }
+    </style>
+
+    <script>
+      let canvas = document.getElementById("snake");
+      let context = canvas.getContext("2d");
+      let boxes = 32;
+      let snake = [];
+
+      snake[0] = {
+        x: 8 * boxes,
+        y: 8 * boxes,
+      };
+
+      let direction = "left";
+      let food = {
+        x: Math.floor(Math.random() * 15 + 1) * boxes,
+        y: Math.floor(Math.random() * 15 + 1) * boxes,
+      };
+
+      function makeBackground() {
+        context.fillStyle = "#221b1f";
+        context.fillRect(0, 0, 16 * boxes, 16 * boxes);
+      }
+
+      function makeSnake() {
+        for (i = 0; i < snake.length; i++) {
+          context.fillStyle = "#33ff00";
+          context.fillRect(snake[i].x, snake[i].y, boxes, boxes);
+        }
+      }
+
+      function makeFood() {
+        context.fillStyle = "#ff0000";
+        context.fillRect(food.x, food.y, boxes, boxes);
+      }
+
+      document.addEventListener("keydown", update);
+
+      function update(event) {
+        if (event.keyCode == 37 && direction !== "right") direction = "left";
+        if (event.keyCode == 38 && direction !== "down") direction = "up";
+        if (event.keyCode == 39 && direction !== "left") direction = "right";
+        if (event.keyCode == 40 && direction !== "up") direction = "down";
+      }
+
+      function startGame() {
+        if (snake[0].x > 15 * boxes && direction === "right") snake[0].x = 0;
+        if (snake[0].x < 0 && direction === "left") snake[0].x = 16 * boxes;
+        if (snake[0].y > 15 * boxes && direction === "down") snake[0].y = 0;
+        if (snake[0].y < 0 && direction === "up") snake[0].y = 16 * boxes;
+
+        for (i = 1; i < snake.length; i++) {
+          if (snake[0].x == snake[i].x && snake[0].y == snake[i].y) {
+            clearInterval(game);
+            alert("Game over! Do you want to play again?");
+          }
+        }
+
+        makeBackground();
+        makeSnake();
+        makeFood();
+
+        let snakeX = snake[0].x;
+        let snakeY = snake[0].y;
+
+        if (direction == "right") snakeX += boxes;
+        if (direction == "left") snakeX -= boxes;
+        if (direction == "up") snakeY -= boxes;
+        if (direction == "down") snakeY += boxes;
+
+        if (snakeX != food.x || snakeY != food.y) {
+          snake.pop();
+        } else {
+          food.x = Math.floor(Math.random() * 15 + 1) * boxes;
+          food.y = Math.floor(Math.random() * 15 + 1) * boxes;
+        }
+
+        let newSnake = {
+          x: snakeX,
+          y: snakeY,
+        };
+
+        snake.unshift(newSnake);
+      }
+
+      let game = setInterval(startGame, 180);
+    </script>
+  </body>
+</html>
